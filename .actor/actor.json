@@ -1,0 +1,62 @@
+{
+  "actorSpecification": 1,
+  "name": "hacker-news-intelligence-scraper",
+  "title": "Hacker News Intelligence Scraper",
+  "description": "Extract Hacker News feeds, keyword search results, individual items, and nested comment threads through official public APIs.",
+  "version": "1.0",
+  "buildTag": "latest",
+  "dockerfile": "Dockerfile",
+  "input": "../INPUT_SCHEMA.json",
+  "exampleRunInput": {
+    "body": "{\"mode\":\"feed\",\"feed\":\"top\",\"maxResults\":10,\"includeComments\":false}",
+    "contentType": "application/json; charset=utf-8"
+  },
+  "storages": {
+    "dataset": {
+      "actorSpecification": 1,
+      "fields": {},
+      "views": {
+        "overview": {
+          "title": "Hacker News items",
+          "transformation": {
+            "fields": ["id", "type", "title", "url", "domain", "author", "score", "commentCount", "createdAt", "feed", "query", "hnUrl"]
+          },
+          "display": {
+            "component": "table",
+            "properties": {
+              "id": { "label": "ID", "format": "number" },
+              "type": { "label": "Type", "format": "text" },
+              "title": { "label": "Title", "format": "text" },
+              "url": { "label": "URL", "format": "link" },
+              "domain": { "label": "Domain", "format": "text" },
+              "author": { "label": "Author", "format": "text" },
+              "score": { "label": "Score", "format": "number" },
+              "commentCount": { "label": "Comments", "format": "number" },
+              "createdAt": { "label": "Published", "format": "date" },
+              "feed": { "label": "Feed", "format": "text" },
+              "query": { "label": "Query", "format": "text" },
+              "hnUrl": { "label": "HN discussion", "format": "link" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "defaultRunOptions": {
+    "build": "latest",
+    "memoryMbytes": 256,
+    "timeoutSecs": 600
+  },
+  "pricingInfo": {
+    "pricingModel": "PAY_PER_EVENT",
+    "pricingPerEvent": {
+      "actorChargeEvents": {
+        "item-scraped": {
+          "eventTitle": "Hacker News item scraped",
+          "eventDescription": "One normalized Hacker News item written to the default dataset.",
+          "eventPriceUsd": 0.00075
+        }
+      }
+    }
+  }
+}

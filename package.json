@@ -1,0 +1,24 @@
+{
+  "name": "hacker-news-intelligence-scraper",
+  "version": "1.0.0",
+  "description": "Apify Actor for Hacker News feeds, search, items, and comment threads.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "start:dev": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "apify": "^3.4.2",
+    "html-to-text": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/html-to-text": "^9.0.4",
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

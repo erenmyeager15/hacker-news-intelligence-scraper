@@ -1,0 +1,152 @@
+{
+  "title": "Hacker News Scraper Input",
+  "description": "Collect feed items, search Hacker News, or fetch specific item IDs. No login, API key, or proxy is required.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "mode": {
+      "title": "Collection mode",
+      "type": "string",
+      "description": "Choose a Hacker News feed, keyword search, or explicit item IDs.",
+      "editor": "select",
+      "enum": ["feed", "search", "items"],
+      "enumTitles": ["Feed", "Keyword search", "Specific item IDs"],
+      "default": "feed"
+    },
+    "feed": {
+      "title": "Feed",
+      "type": "string",
+      "description": "The official Hacker News feed to collect when mode is Feed.",
+      "editor": "select",
+      "enum": ["top", "new", "best", "ask", "show", "jobs"],
+      "enumTitles": ["Top stories", "New stories", "Best stories", "Ask HN", "Show HN", "Jobs"],
+      "default": "top"
+    },
+    "query": {
+      "title": "Search query",
+      "type": "string",
+      "description": "Full-text query used in Keyword search mode.",
+      "editor": "textfield",
+      "default": "artificial intelligence"
+    },
+    "searchType": {
+      "title": "Search result type",
+      "type": "string",
+      "description": "Search stories or comments through the public HN Algolia API.",
+      "editor": "select",
+      "enum": ["story", "comment"],
+      "enumTitles": ["Stories", "Comments"],
+      "default": "story"
+    },
+    "itemIds": {
+      "title": "Item IDs",
+      "type": "array",
+      "description": "Numeric Hacker News item IDs used in Specific item IDs mode.",
+      "editor": "stringList",
+      "items": { "type": "string", "pattern": "^[0-9]+$" }
+    },
+    "maxResults": {
+      "title": "Maximum results",
+      "type": "integer",
+      "description": "Maximum number of records written to the dataset.",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 100
+    },
+    "minScore": {
+      "title": "Minimum score",
+      "type": "integer",
+      "description": "Keep items with at least this many points.",
+      "editor": "number",
+      "minimum": 0,
+      "default": 0
+    },
+    "minComments": {
+      "title": "Minimum comment count",
+      "type": "integer",
+      "description": "Keep stories with at least this many comments.",
+      "editor": "number",
+      "minimum": 0,
+      "default": 0
+    },
+    "includeKeywords": {
+      "title": "Include keywords",
+      "type": "array",
+      "description": "Keep records containing at least one keyword in the title or text. Leave empty to disable.",
+      "editor": "stringList",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "excludeKeywords": {
+      "title": "Exclude keywords",
+      "type": "array",
+      "description": "Remove records containing any of these keywords in the title or text.",
+      "editor": "stringList",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "authors": {
+      "title": "Authors",
+      "type": "array",
+      "description": "Only keep records by these exact Hacker News usernames.",
+      "editor": "stringList",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "domain": {
+      "title": "Domain contains",
+      "type": "string",
+      "description": "Only keep external links whose hostname contains this value.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "fromDate": {
+      "title": "Published after",
+      "type": "string",
+      "description": "Optional ISO date or date-time, for example 2026-01-01.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "toDate": {
+      "title": "Published before",
+      "type": "string",
+      "description": "Optional ISO date or date-time, for example 2026-12-31.",
+      "editor": "textfield",
+      "default": ""
+    },
+    "includeComments": {
+      "title": "Include nested comments",
+      "type": "boolean",
+      "description": "Fetch comments and nest them inside each result record.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "maxCommentsPerItem": {
+      "title": "Maximum comments per item",
+      "type": "integer",
+      "description": "Maximum nested comments fetched for each result.",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 500,
+      "default": 50
+    },
+    "commentDepth": {
+      "title": "Comment depth",
+      "type": "integer",
+      "description": "Maximum nested reply depth to traverse.",
+      "editor": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 3
+    },
+    "includeDeadOrDeleted": {
+      "title": "Include dead or deleted items",
+      "type": "boolean",
+      "description": "Include records marked dead or deleted by Hacker News.",
+      "editor": "checkbox",
+      "default": false
+    }
+  },
+  "required": ["mode", "feed", "query", "searchType", "maxResults"]
+}
