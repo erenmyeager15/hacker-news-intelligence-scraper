@@ -156,34 +156,53 @@ await Actor.main(async () => {
         throw new Error('fromDate must be earlier than or equal to toDate');
     }
 
-    const candidateIds = await getCandidateIds(input);
+    const candidateIds = [...new Set(await getCandidateIds(input))];
     const scanLimit = input.mode === 'items' ? candidateIds.length : Math.min(candidateIds.length, Math.max(input.maxResults * 5, input.maxResults));
     const selectedIds = candidateIds.slice(0, scanLimit);
     log.info(`Fetching ${selectedIds.length} candidate items`, { mode: input.mode, maxResults: input.maxResults });
 
-    const items = await mapConcurrent(selectedIds, 20, fetchItem);
     let pushed = 0;
+    let spendingLimitReached = false;
+    const candidateBatchSize = 20;
 
-    for (let index = 0; index < items.length && pushed < input.maxResults; index += 1) {
-        const item = items[index];
-        if (!item) continue;
+    for (let offset = 0; offset < selectedIds.length && pushed < input.maxResults; offset += candidateBatchSize) {
+        if (spendingLimitReached) break;
 
-        const record = normalizeItem(
-            item,
-            input.mode === 'feed' ? input.feed : null,
-            input.mode === 'search' ? input.query : null,
-            input.mode === 'feed' ? index + 1 : null,
-        );
-        if (!matchesFilters(record, input, fromTimestamp, toTimestamp)) continue;
+        const batchIds = selectedIds.slice(offset, offset + candidateBatchSize);
+        const items = await mapConcurrent(batchIds, candidateBatchSize, fetchItem);
 
-        if (input.includeComments && item.kids?.length) {
-            record.comments = await fetchComments(item, input.maxCommentsPerItem ?? 50, input.commentDepth ?? 3);
+        for (let batchIndex = 0; batchIndex < items.length && pushed < input.maxResults; batchIndex += 1) {
+            const item = items[batchIndex];
+            if (!item) continue;
+
+            const record = normalizeItem(
+                item,
+                input.mode === 'feed' ? input.feed : null,
+                input.mode === 'search' ? input.query : null,
+                input.mode === 'feed' ? offset + batchIndex + 1 : null,
+            );
+            if (!matchesFilters(record, input, fromTimestamp, toTimestamp)) continue;
+
+            if (input.includeComments && item.kids?.length) {
+                record.comments = await fetchComments(item, input.maxCommentsPerItem ?? 50, input.commentDepth ?? 3);
+            }
+
+            const chargeResult = await Actor.pushData(record, 'item-scraped');
+            const recordWasSaved = chargeResult.chargedCount > 0 || !chargeResult.eventChargeLimitReached;
+            if (recordWasSaved) pushed += 1;
+
+            if (chargeResult.eventChargeLimitReached) {
+                spendingLimitReached = true;
+                const message = `Stopped at the user's spending limit after ${pushed} Hacker News item(s).`;
+                await Actor.setStatusMessage(message);
+                log.warning(message);
+                break;
+            }
         }
-
-        await Actor.pushData(record);
-        await Actor.charge({ eventName: 'item-scraped', count: 1 });
-        pushed += 1;
     }
 
-    log.info('Hacker News collection finished', { candidates: selectedIds.length, pushed });
+    if (!spendingLimitReached) {
+        await Actor.setStatusMessage(`Finished with ${pushed} Hacker News item(s).`);
+        log.info('Hacker News collection finished', { candidates: selectedIds.length, pushed });
+    }
 });

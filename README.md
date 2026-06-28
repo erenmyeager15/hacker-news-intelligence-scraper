@@ -37,7 +37,7 @@ Built with Node.js 20, TypeScript, and the Apify SDK. It uses the official Hacke
 
 ## Pricing
 
-This Actor uses Apify Pay Per Event pricing. You pay only for clean records delivered to the dataset. Empty, filtered, or failed records are not charged.
+This Actor uses Apify Pay Per Event pricing. Each clean record is saved and charged atomically. Empty, filtered, or failed records are not charged, and later API batches are not requested after the user's spending limit is reached.
 
 | Event name | Price per event | 1,000 results | 10,000 results |
 | --- | ---: | ---: | ---: |

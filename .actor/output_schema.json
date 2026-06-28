@@ -1,0 +1,14 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Hacker News Intelligence Scraper Output",
+  "description": "Structured Hacker News records for feeds, search results, individual items, and optional nested comment threads from official public APIs.",
+  "type": "object",
+  "properties": {
+    "results": {
+      "type": "string",
+      "title": "Hacker News item records",
+      "description": "Clean dataset items containing Hacker News story, job, poll, and comment metadata with scores, authors, URLs, domains, feed or query context, and optional nested comments.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

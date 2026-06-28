@@ -7,6 +7,7 @@
   "buildTag": "latest",
   "dockerfile": "Dockerfile",
   "input": "../INPUT_SCHEMA.json",
+  "output": "./output_schema.json",
   "exampleRunInput": {
     "body": "{\"mode\":\"feed\",\"feed\":\"top\",\"maxResults\":10,\"includeComments\":false}",
     "contentType": "application/json; charset=utf-8"

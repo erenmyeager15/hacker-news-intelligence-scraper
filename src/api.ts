@@ -40,7 +40,15 @@ export async function fetchFeedIds(feed: string): Promise<number[]> {
 }
 
 export async function fetchItem(id: number): Promise<HnApiItem | null> {
-    return fetchJson<HnApiItem | null>(`${FIREBASE_BASE}/item/${id}.json`);
+    try {
+        return await fetchJson<HnApiItem | null>(`${FIREBASE_BASE}/item/${id}.json`);
+    } catch (error) {
+        console.warn('Skipping Hacker News item after request failure', {
+            id,
+            reason: error instanceof Error ? error.message : String(error),
+        });
+        return null;
+    }
 }
 
 interface AlgoliaHit {
