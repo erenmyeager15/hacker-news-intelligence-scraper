@@ -8,7 +8,7 @@ const DEFAULT_INPUT: Input = {
     feed: 'top',
     query: 'artificial intelligence',
     searchType: 'story',
-    maxResults: 100,
+    maxResults: 10,
     minScore: 0,
     minComments: 0,
     includeKeywords: [],
@@ -18,7 +18,7 @@ const DEFAULT_INPUT: Input = {
     fromDate: '',
     toDate: '',
     includeComments: false,
-    maxCommentsPerItem: 50,
+    maxCommentsPerItem: 20,
     commentDepth: 3,
     includeDeadOrDeleted: false,
 };
