@@ -48,11 +48,11 @@
     "maxResults": {
       "title": "Maximum results",
       "type": "integer",
-      "description": "Maximum number of records written to the dataset.",
+      "description": "Maximum number of records written to the dataset. Start small for testing, especially when nested comments are enabled.",
       "editor": "number",
       "minimum": 1,
       "maximum": 1000,
-      "default": 100
+      "default": 10
     },
     "minScore": {
       "title": "Minimum score",
@@ -129,7 +129,7 @@
       "editor": "number",
       "minimum": 1,
       "maximum": 500,
-      "default": 50
+      "default": 20
     },
     "commentDepth": {
       "title": "Comment depth",

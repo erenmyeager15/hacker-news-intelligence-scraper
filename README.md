@@ -1,165 +1,121 @@
-# Hacker News Scraper - Stories, Comments, Scores & Search
+# Hacker News Intelligence Scraper
 
-Scrape Hacker News stories, comments, scores, and search results into clean, structured data. This Hacker News scraper collects top, new, best, Ask HN, Show HN, and jobs feeds, runs full-text keyword search, fetches specific item IDs, and optionally nests comment threads. Export to JSON, CSV, Excel, or HTML, or pull via the Apify API. No login and no API key required.
+Collect Hacker News feeds, keyword search results, specific item IDs, and optional nested comment threads into clean Apify dataset rows. The Actor uses the official Hacker News Firebase API for item data and the public HN Algolia API for keyword search. No login, browser, API key, or proxy is required.
 
-Built with Node.js 20, TypeScript, and the Apify SDK. It uses the official Hacker News Firebase API for feeds and item details and the public HN Algolia Search API for keyword search, with retries and bounded concurrency so runs are reliable and repeatable. No browser and no proxy are required.
+Use it for developer trend monitoring, startup research, Show HN discovery, Ask HN analysis, and lightweight technical-news dashboards.
 
-## What It Extracts
-
-- `id` - numeric Hacker News item ID
-- `type` - item type (story, comment, job, poll)
-- `title` - story or item title
-- `text` and `textHtml` - item body as plain text and HTML
-- `url` - external link, when present
-- `hnUrl` - the Hacker News discussion URL
-- `domain` - hostname of the external link
-- `author` - HN username
-- `score` - points
-- `commentCount` - number of comments
-- `parentId` - parent item ID for comments
-- `pollId` and `pollParts` - poll references
-- `createdAt` and `createdAtUnix` - publication time (ISO and Unix)
-- `rank` - position in the feed
-- `feed` - source feed (top, new, best, ask, show, jobs)
-- `query` - the search query that matched the record
-- `dead` and `deleted` - moderation flags
-- `comments` - optional nested comment threads (`id`, `author`, `text`, `textHtml`, `score`, `createdAt`, `createdAtUnix`, `parentId`, `depth`, `dead`, `deleted`, `hnUrl`)
-- `collectedAt` - scrape timestamp
-
-## Use Cases
-
-1. Monitor developer, startup, and technology trends across the top, new, and best feeds.
-2. Track product, brand, and competitor mentions with keyword and domain filters.
-3. Discover Show HN launches and emerging tools as they appear.
-4. Analyze Ask HN discussions and developer sentiment with nested comments.
-5. Collect Hacker News jobs feed data for recruiting and hiring research.
-6. Build alerts, dashboards, and datasets for AI and research pipelines.
-
-## Pricing
-
-This Actor uses Apify Pay Per Event pricing. Each clean record is saved and charged atomically. Empty, filtered, or failed records are not charged, and later API batches are not requested after the user's spending limit is reached.
-
-| Event name | Price per event | 1,000 results | 10,000 results |
-| --- | ---: | ---: | ---: |
-| `item-scraped` | $0.00075 | $0.75 | $7.50 |
-
-## Input
-
-| Field | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `mode` | string | yes | `feed` | `feed`, `search`, or `items` |
-| `feed` | string | yes | `top` | Top, new, best, ask, show, or jobs |
-| `query` | string | yes | `artificial intelligence` | Keyword query for search mode |
-| `searchType` | string | yes | `story` | Search stories or comments |
-| `itemIds` | string[] | no | - | HN item IDs for items mode |
-| `maxResults` | integer | yes | `100` | Maximum dataset records (1-1000) |
-| `minScore` | integer | no | `0` | Minimum points |
-| `minComments` | integer | no | `0` | Minimum story comments |
-| `includeKeywords` | string[] | no | `[]` | Require at least one title/text keyword |
-| `excludeKeywords` | string[] | no | `[]` | Exclude matching title/text keywords |
-| `authors` | string[] | no | `[]` | Exact HN usernames |
-| `domain` | string | no | empty | Required substring in external hostname |
-| `fromDate` | string | no | empty | Earliest publication date |
-| `toDate` | string | no | empty | Latest publication date |
-| `includeComments` | boolean | no | `false` | Nest comments in each record |
-| `maxCommentsPerItem` | integer | no | `50` | Nested comment limit per record (1-500) |
-| `commentDepth` | integer | no | `3` | Reply depth limit (1-10) |
-| `includeDeadOrDeleted` | boolean | no | `false` | Include dead or deleted items |
-
-### Example input
+## Quick Start
 
 ```json
 {
   "mode": "feed",
-  "feed": "show",
-  "maxResults": 25,
-  "minScore": 10,
-  "includeKeywords": ["AI", "developer"],
-  "includeComments": true,
-  "maxCommentsPerItem": 20,
-  "commentDepth": 2
+  "feed": "top",
+  "query": "artificial intelligence",
+  "searchType": "story",
+  "maxResults": 10,
+  "includeComments": false
 }
 ```
 
-## How to Scrape Hacker News (Step by Step)
+This collects the first 10 top-feed items without nested comments, keeping the first run fast and low-cost.
 
-1. Click **Try for free** / **Run**.
-2. Pick a `mode`: a `feed` (top, new, best, ask, show, jobs), keyword `search`, or specific `itemIds`.
-3. Add filters such as `minScore`, `includeKeywords`, `authors`, `domain`, or a date range to narrow results.
-4. Set `maxResults` (start small to test) and toggle `includeComments` if you want nested threads.
-5. Run the Actor, then export results as JSON, CSV, Excel, or HTML, or pull them via the Apify API.
+## Modes
 
-## Sample Output
+| Mode | What it does |
+| --- | --- |
+| `feed` | Collects `top`, `new`, `best`, `ask`, `show`, or `jobs` feeds. |
+| `search` | Searches stories or comments through the public HN Algolia API. |
+| `items` | Fetches exact Hacker News item IDs. |
+
+## Input
+
+| Field | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `mode` | string | `feed` | `feed`, `search`, or `items`. |
+| `feed` | string | `top` | Used when `mode` is `feed`. |
+| `query` | string | `artificial intelligence` | Used when `mode` is `search`. |
+| `searchType` | string | `story` | Search `story` or `comment`. |
+| `itemIds` | string array | `[]` | Numeric HN item IDs for `items` mode. |
+| `maxResults` | integer | `10` | Maximum dataset rows. |
+| `minScore` | integer | `0` | Keep only items with at least this score. |
+| `minComments` | integer | `0` | Keep only stories with at least this many comments. |
+| `includeKeywords` | string array | `[]` | Require at least one keyword in title or text. |
+| `excludeKeywords` | string array | `[]` | Exclude matching title or text. |
+| `authors` | string array | `[]` | Exact Hacker News usernames. |
+| `domain` | string | empty | Keep links whose hostname contains this value. |
+| `fromDate`, `toDate` | string | empty | Optional ISO date or date-time filters. |
+| `includeComments` | boolean | `false` | Fetch nested comments into each result. |
+| `maxCommentsPerItem` | integer | `20` | Comment cap per item when comments are enabled. |
+| `commentDepth` | integer | `3` | Nested reply depth. |
+| `includeDeadOrDeleted` | boolean | `false` | Include moderation/deleted records only when explicitly enabled. |
+
+## Output
+
+Each dataset row is one Hacker News item:
+
+| Field | Description |
+| --- | --- |
+| `id`, `type` | Hacker News item ID and item type. |
+| `title`, `text`, `textHtml` | Story or comment content when available. |
+| `url`, `hnUrl`, `domain` | External URL, HN discussion URL, and hostname. |
+| `author`, `score`, `commentCount` | Public HN metadata. |
+| `createdAt`, `createdAtUnix` | Publication time. |
+| `feed`, `query`, `rank` | Source context for feed/search runs. |
+| `dead`, `deleted` | Moderation flags. |
+| `comments` | Optional nested comments when enabled. |
+| `collectedAt` | Actor scrape timestamp. |
+
+## Verified Sample
+
+An existing successful top-feed run returned this row:
 
 ```json
 {
-  "id": 48487029,
+  "id": 48626137,
   "type": "story",
-  "title": "Show HN: An open-source AI agent for developers",
-  "text": null,
-  "textHtml": null,
-  "url": "https://github.com/example/ai-agent",
-  "hnUrl": "https://news.ycombinator.com/item?id=48487029",
-  "domain": "github.com",
-  "author": "devbuilder",
-  "score": 287,
-  "commentCount": 94,
-  "parentId": null,
-  "pollId": null,
-  "pollParts": [],
-  "createdAt": "2026-06-11T05:22:06.000Z",
-  "createdAtUnix": 1781155326,
+  "title": "Deno Desktop",
+  "url": "https://docs.deno.com/runtime/desktop/",
+  "hnUrl": "https://news.ycombinator.com/item?id=48626137",
+  "domain": "docs.deno.com",
+  "author": "GeneralMaximus",
+  "score": 204,
+  "commentCount": 66,
+  "createdAt": "2026-06-22T05:38:40.000Z",
   "rank": 1,
-  "feed": "show",
-  "query": null,
-  "dead": false,
-  "deleted": false,
-  "comments": [
-    {
-      "id": 48487102,
-      "author": "curious_hacker",
-      "text": "This is great, how does it handle rate limits?",
-      "textHtml": "<p>This is great, how does it handle rate limits?</p>",
-      "score": 0,
-      "createdAt": "2026-06-11T05:41:12.000Z",
-      "createdAtUnix": 1781156472,
-      "parentId": 48487029,
-      "depth": 1,
-      "dead": false,
-      "deleted": false,
-      "hnUrl": "https://news.ycombinator.com/item?id=48487102"
-    }
-  ],
-  "collectedAt": "2026-06-11T06:00:00.000Z"
+  "feed": "top"
 }
 ```
 
-## How It Works
+## Pricing
 
-1. Validates the input and selects the collection mode (feed, search, or items).
-2. Fetches feed and item details from the official Hacker News Firebase API, and keyword results from the public HN Algolia Search API.
-3. Applies score, comment, keyword, author, domain, and date filters.
-4. Optionally fetches and nests comment threads up to your depth and count limits.
-5. Charges `item-scraped` only after a clean record is saved, then writes it to the Apify Dataset.
+Active pay-per-event pricing:
 
-## Known Limits
+| Event | Price |
+| --- | ---: |
+| `item-scraped` | `$0.00075` per item |
+| `apify-actor-start` | `$0.00005` per GB at run start |
 
-- `text` and `textHtml` are only present for items that have body content; link stories return `null` for these fields.
-- `comments` are only populated when `includeComments` is enabled, and are bounded by `maxCommentsPerItem` and `commentDepth`.
-- Keyword search uses the HN Algolia API, so results and ranking follow that service's coverage and indexing.
+Records are saved and charged atomically. Empty, filtered, dead/deleted excluded, or failed records are not charged, and later API batches are skipped after the user's spending limit is reached.
+
+## Common Workflows
+
+1. Monitor `top`, `new`, or `best` for developer and startup trends.
+2. Track product or competitor mentions with `mode: "search"` and a query.
+3. Find launch examples with the `show` feed and filters such as `minScore`.
+4. Analyze discussion quality by enabling comments on a small result set.
+5. Export to CSV, Excel, JSON, HTML, or connect through the Apify API.
+
+## Notes and Limits
+
+- Search results depend on HN Algolia indexing and ranking.
+- Nested comments increase runtime; keep `maxResults`, `maxCommentsPerItem`, and `commentDepth` small at first.
 - Dead or deleted items are excluded unless `includeDeadOrDeleted` is enabled.
-- `maxResults` is capped at 1,000 records per run.
-
-## Data Sources
-
-This Actor uses the official Hacker News Firebase API and the public HN Algolia Search API. It does not rely on fragile page selectors.
+- The Actor collects public HN metadata; it is not a private user-profile or contact scraper.
 
 ## Responsible Use
 
-This Actor is intended for lawful collection of publicly available information only. Users are responsible for ensuring their use complies with the source website's terms, robots.txt, applicable privacy laws, including India's DPDP Act, and all local regulations.
-
-Do not use this Actor to collect, store, sell, or misuse personal data without a lawful basis. The Actor author is not responsible for misuse by end users.
+Use this Actor for lawful collection of publicly available Hacker News data. Respect Hacker News, Algolia, and downstream platform terms, privacy laws, and any restrictions that apply to how you store or process exported data.
 
 ## License
 
-Apache-2.0.
+Apache-2.0

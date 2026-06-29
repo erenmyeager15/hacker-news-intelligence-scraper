@@ -5,11 +5,13 @@
   "description": "Extract Hacker News feeds, keyword search results, individual items, and nested comment threads through official public APIs.",
   "version": "1.0",
   "buildTag": "latest",
+  "categories": ["DEVELOPER_TOOLS", "NEWS", "AUTOMATION"],
   "dockerfile": "Dockerfile",
   "input": "../INPUT_SCHEMA.json",
+  "readme": "../README.md",
   "output": "./output_schema.json",
   "exampleRunInput": {
-    "body": "{\"mode\":\"feed\",\"feed\":\"top\",\"maxResults\":10,\"includeComments\":false}",
+    "body": "{\"mode\":\"feed\",\"feed\":\"top\",\"query\":\"artificial intelligence\",\"searchType\":\"story\",\"itemIds\":[],\"maxResults\":10,\"minScore\":0,\"minComments\":0,\"includeKeywords\":[],\"excludeKeywords\":[],\"authors\":[],\"domain\":\"\",\"fromDate\":\"\",\"toDate\":\"\",\"includeComments\":false,\"maxCommentsPerItem\":20,\"commentDepth\":3,\"includeDeadOrDeleted\":false}",
     "contentType": "application/json; charset=utf-8"
   },
   "storages": {
@@ -45,16 +47,26 @@
   },
   "defaultRunOptions": {
     "build": "latest",
-    "memoryMbytes": 256,
-    "timeoutSecs": 600
+    "memoryMbytes": 512,
+    "timeoutSecs": 3600
   },
+  "minMemoryMbytes": 256,
+  "maxMemoryMbytes": 2048,
   "pricingInfo": {
     "pricingModel": "PAY_PER_EVENT",
     "pricingPerEvent": {
       "actorChargeEvents": {
+        "apify-actor-start": {
+          "eventTitle": "Actor Start",
+          "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+          "isOneTimeEvent": true,
+          "eventPriceUsd": 0.00005
+        },
         "item-scraped": {
           "eventTitle": "Hacker News item scraped",
           "eventDescription": "One normalized Hacker News item written to the default dataset.",
+          "isOneTimeEvent": false,
+          "isPrimaryEvent": true,
           "eventPriceUsd": 0.00075
         }
       }
