@@ -12,12 +12,12 @@ Use it for developer trend monitoring, startup research, Show HN discovery, Ask 
   "feed": "top",
   "query": "artificial intelligence",
   "searchType": "story",
-  "maxResults": 10,
+  "maxResults": 1,
   "includeComments": false
 }
 ```
 
-This collects the first 10 top-feed items without nested comments, keeping the first run fast and low-cost.
+This collects one top-feed item without nested comments, keeping the first run fast and low-cost. Increase `maxResults` after checking the sample row.
 
 ## Modes
 
@@ -36,7 +36,7 @@ This collects the first 10 top-feed items without nested comments, keeping the f
 | `query` | string | `artificial intelligence` | Used when `mode` is `search`. |
 | `searchType` | string | `story` | Search `story` or `comment`. |
 | `itemIds` | string array | `[]` | Numeric HN item IDs for `items` mode. |
-| `maxResults` | integer | `10` | Maximum dataset rows. |
+| `maxResults` | integer | `1` | Maximum dataset rows, from 1 to 1,000. |
 | `minScore` | integer | `0` | Keep only items with at least this score. |
 | `minComments` | integer | `0` | Keep only stories with at least this many comments. |
 | `includeKeywords` | string array | `[]` | Require at least one keyword in title or text. |
@@ -45,7 +45,7 @@ This collects the first 10 top-feed items without nested comments, keeping the f
 | `domain` | string | empty | Keep links whose hostname contains this value. |
 | `fromDate`, `toDate` | string | empty | Optional ISO date or date-time filters. |
 | `includeComments` | boolean | `false` | Fetch nested comments into each result. |
-| `maxCommentsPerItem` | integer | `20` | Comment cap per item when comments are enabled. |
+| `maxCommentsPerItem` | integer | `20` | Comment cap per item; nested-comment requests are capped at 5,000 per run. |
 | `commentDepth` | integer | `3` | Nested reply depth. |
 | `includeDeadOrDeleted` | boolean | `false` | Include moderation/deleted records only when explicitly enabled. |
 
@@ -65,22 +65,34 @@ Each dataset row is one Hacker News item:
 | `comments` | Optional nested comments when enabled. |
 | `collectedAt` | Actor scrape timestamp. |
 
+The default key-value store also contains `RUN_STATUS`. It reports the final outcome, discovered and requested item counts, saved rows, filters, missing items, comment counts, retries, upstream failures, spending-limit state, and up to 20 concise diagnostics.
+
+Possible outcomes are:
+
+| Status | Meaning |
+| --- | --- |
+| `succeeded` | Requested records were saved without detected upstream loss. |
+| `partial` | Records were saved, but one or more item/comment requests or search hits could not be used. |
+| `empty` | The source responded correctly, but no records matched or available IDs were missing/deleted. |
+| `stopped_spending_limit` | Collection stopped at the caller's maximum cost per run. |
+| `failed` | Discovery, all usable item requests, input validation, or dataset storage failed. |
+
 ## Verified Sample
 
-An existing successful top-feed run returned this row:
+A one-result top-feed proof on July 15, 2026 returned this row:
 
 ```json
 {
-  "id": 48626137,
+  "id": 48915709,
   "type": "story",
-  "title": "Deno Desktop",
-  "url": "https://docs.deno.com/runtime/desktop/",
-  "hnUrl": "https://news.ycombinator.com/item?id=48626137",
-  "domain": "docs.deno.com",
-  "author": "GeneralMaximus",
-  "score": 204,
-  "commentCount": 66,
-  "createdAt": "2026-06-22T05:38:40.000Z",
+  "title": "Jurassic Park computers in excruciating detail",
+  "url": "https://fabiensanglard.net/jurrasic_park_computers/index.html",
+  "hnUrl": "https://news.ycombinator.com/item?id=48915709",
+  "domain": "fabiensanglard.net",
+  "author": "vinhnx",
+  "score": 362,
+  "commentCount": 86,
+  "createdAt": "2026-07-15T02:57:47.000Z",
   "rank": 1,
   "feed": "top"
 }
@@ -107,9 +119,12 @@ Records are saved and charged atomically. Empty, filtered, dead/deleted excluded
 
 ## Notes and Limits
 
+- Inputs are validated at runtime and unsupported fields are rejected instead of silently ignored.
+- Firebase and Algolia responses are shape-checked before use. Retryable `408`, `429`, and `5xx` responses use bounded retries; other HTTP and malformed-data errors fail immediately.
+- Search pagination, response size, item scans, comment traversal, and diagnostic output are bounded.
 - Search results depend on HN Algolia indexing and ranking.
 - Nested comments increase runtime; keep `maxResults`, `maxCommentsPerItem`, and `commentDepth` small at first.
-- Dead or deleted items are excluded unless `includeDeadOrDeleted` is enabled.
+- Dead or deleted root items and nested comments are excluded unless `includeDeadOrDeleted` is enabled. Eligible replies below an excluded comment are still traversed.
 - The Actor collects public HN metadata; it is not a private user-profile or contact scraper.
 
 ## Responsible Use

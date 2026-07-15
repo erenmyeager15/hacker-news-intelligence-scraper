@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
+    "lint": "tsc --noEmit",
+    "test": "npm run build && node --test dist/input.test.js dist/api.test.js dist/records.test.js dist/scraper.test.js",
     "start": "node dist/main.js",
     "start:dev": "tsx src/main.ts"
   },

@@ -2,7 +2,7 @@
   "actorSpecification": 1,
   "name": "hacker-news-intelligence-scraper",
   "title": "Hacker News Intelligence Scraper",
-  "description": "Extract Hacker News feeds, keyword search results, individual items, and nested comment threads through official public APIs.",
+  "description": "Collect Hacker News feeds, keyword search results, exact items, and optional comment threads through the official Firebase API and public HN Algolia API.",
   "version": "1.0",
   "buildTag": "latest",
   "categories": ["DEVELOPER_TOOLS", "NEWS", "AUTOMATION"],
@@ -11,7 +11,7 @@
   "readme": "../README.md",
   "output": "./output_schema.json",
   "exampleRunInput": {
-    "body": "{\"mode\":\"feed\",\"feed\":\"top\",\"query\":\"artificial intelligence\",\"searchType\":\"story\",\"itemIds\":[],\"maxResults\":10,\"minScore\":0,\"minComments\":0,\"includeKeywords\":[],\"excludeKeywords\":[],\"authors\":[],\"domain\":\"\",\"fromDate\":\"\",\"toDate\":\"\",\"includeComments\":false,\"maxCommentsPerItem\":20,\"commentDepth\":3,\"includeDeadOrDeleted\":false}",
+    "body": "{\"mode\":\"feed\",\"feed\":\"top\",\"query\":\"artificial intelligence\",\"searchType\":\"story\",\"itemIds\":[],\"maxResults\":1,\"minScore\":0,\"minComments\":0,\"includeKeywords\":[],\"excludeKeywords\":[],\"authors\":[],\"domain\":\"\",\"fromDate\":\"\",\"toDate\":\"\",\"includeComments\":false,\"maxCommentsPerItem\":20,\"commentDepth\":3,\"includeDeadOrDeleted\":false}",
     "contentType": "application/json; charset=utf-8"
   },
   "storages": {

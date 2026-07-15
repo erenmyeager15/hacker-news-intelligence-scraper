@@ -9,6 +9,12 @@
       "title": "Hacker News item records",
       "description": "Clean dataset items containing Hacker News story, job, poll, and comment metadata with scores, authors, URLs, domains, feed or query context, and optional nested comments.",
       "template": "{{links.apiDefaultDatasetUrl}}/items"
+    },
+    "runStatus": {
+      "type": "string",
+      "title": "Run status and diagnostics",
+      "description": "Machine-readable outcome, counters, retry metrics, partial-failure diagnostics, and spending-limit state.",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/RUN_STATUS"
     }
   }
 }

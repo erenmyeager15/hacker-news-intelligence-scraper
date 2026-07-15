@@ -4,7 +4,7 @@
   "query": "artificial intelligence",
   "searchType": "story",
   "itemIds": [],
-  "maxResults": 10,
+  "maxResults": 1,
   "minScore": 0,
   "minComments": 0,
   "includeKeywords": [],

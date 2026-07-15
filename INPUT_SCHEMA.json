@@ -3,6 +3,7 @@
   "description": "Collect feed items, search Hacker News, or fetch specific item IDs. No login, API key, or proxy is required.",
   "type": "object",
   "schemaVersion": 1,
+  "additionalProperties": false,
   "properties": {
     "mode": {
       "title": "Collection mode",
@@ -27,6 +28,7 @@
       "type": "string",
       "description": "Full-text query used in Keyword search mode.",
       "editor": "textfield",
+      "maxLength": 256,
       "default": "artificial intelligence"
     },
     "searchType": {
@@ -43,7 +45,8 @@
       "type": "array",
       "description": "Numeric Hacker News item IDs used in Specific item IDs mode.",
       "editor": "stringList",
-      "items": { "type": "string", "pattern": "^[0-9]+$" }
+      "maxItems": 1000,
+      "items": { "type": "string", "pattern": "^[1-9][0-9]{0,11}$" }
     },
     "maxResults": {
       "title": "Maximum results",
@@ -52,7 +55,7 @@
       "editor": "number",
       "minimum": 1,
       "maximum": 1000,
-      "default": 10
+      "default": 1
     },
     "minScore": {
       "title": "Minimum score",
@@ -60,6 +63,7 @@
       "description": "Keep items with at least this many points.",
       "editor": "number",
       "minimum": 0,
+      "maximum": 1000000000,
       "default": 0
     },
     "minComments": {
@@ -68,6 +72,7 @@
       "description": "Keep stories with at least this many comments.",
       "editor": "number",
       "minimum": 0,
+      "maximum": 1000000000,
       "default": 0
     },
     "includeKeywords": {
@@ -75,7 +80,8 @@
       "type": "array",
       "description": "Keep records containing at least one keyword in the title or text. Leave empty to disable.",
       "editor": "stringList",
-      "items": { "type": "string" },
+      "maxItems": 50,
+      "items": { "type": "string", "minLength": 1, "maxLength": 128 },
       "default": []
     },
     "excludeKeywords": {
@@ -83,7 +89,8 @@
       "type": "array",
       "description": "Remove records containing any of these keywords in the title or text.",
       "editor": "stringList",
-      "items": { "type": "string" },
+      "maxItems": 50,
+      "items": { "type": "string", "minLength": 1, "maxLength": 128 },
       "default": []
     },
     "authors": {
@@ -91,7 +98,8 @@
       "type": "array",
       "description": "Only keep records by these exact Hacker News usernames.",
       "editor": "stringList",
-      "items": { "type": "string" },
+      "maxItems": 50,
+      "items": { "type": "string", "minLength": 1, "maxLength": 64 },
       "default": []
     },
     "domain": {
@@ -99,6 +107,7 @@
       "type": "string",
       "description": "Only keep external links whose hostname contains this value.",
       "editor": "textfield",
+      "maxLength": 253,
       "default": ""
     },
     "fromDate": {
@@ -106,6 +115,7 @@
       "type": "string",
       "description": "Optional ISO date or date-time, for example 2026-01-01.",
       "editor": "textfield",
+      "maxLength": 35,
       "default": ""
     },
     "toDate": {
@@ -113,6 +123,7 @@
       "type": "string",
       "description": "Optional ISO date or date-time, for example 2026-12-31.",
       "editor": "textfield",
+      "maxLength": 35,
       "default": ""
     },
     "includeComments": {
@@ -125,7 +136,7 @@
     "maxCommentsPerItem": {
       "title": "Maximum comments per item",
       "type": "integer",
-      "description": "Maximum nested comments fetched for each result.",
+      "description": "Maximum nested comments fetched for each result. A run may request at most 5,000 comments across all results.",
       "editor": "number",
       "minimum": 1,
       "maximum": 500,

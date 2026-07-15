@@ -1,31 +1,34 @@
 export type Mode = 'feed' | 'search' | 'items';
 export type Feed = 'top' | 'new' | 'best' | 'ask' | 'show' | 'jobs';
 export type SearchType = 'story' | 'comment';
+export type HnItemType = 'job' | 'story' | 'comment' | 'poll' | 'pollopt';
 
-export interface Input {
+export interface NormalizedInput {
     mode: Mode;
     feed: Feed;
     query: string;
     searchType: SearchType;
-    itemIds?: string[];
+    itemIds: number[];
     maxResults: number;
-    minScore?: number;
-    minComments?: number;
-    includeKeywords?: string[];
-    excludeKeywords?: string[];
-    authors?: string[];
-    domain?: string;
-    fromDate?: string;
-    toDate?: string;
-    includeComments?: boolean;
-    maxCommentsPerItem?: number;
-    commentDepth?: number;
-    includeDeadOrDeleted?: boolean;
+    minScore: number;
+    minComments: number;
+    includeKeywords: string[];
+    excludeKeywords: string[];
+    authors: string[];
+    domain: string;
+    fromDate: string;
+    toDate: string;
+    fromTimestamp: number | null;
+    toTimestamp: number | null;
+    includeComments: boolean;
+    maxCommentsPerItem: number;
+    commentDepth: number;
+    includeDeadOrDeleted: boolean;
 }
 
 export interface HnApiItem {
     id: number;
-    type?: string;
+    type: HnItemType;
     by?: string;
     time?: number;
     text?: string;
@@ -39,6 +42,27 @@ export interface HnApiItem {
     kids?: number[];
     dead?: boolean;
     deleted?: boolean;
+}
+
+export interface SearchIdsResult {
+    ids: number[];
+    pagesFetched: number;
+    invalidHitsSkipped: number;
+    pageLimitReached: boolean;
+}
+
+export interface ApiMetrics {
+    requestAttempts: number;
+    retries: number;
+    firebaseAttempts: number;
+    algoliaAttempts: number;
+}
+
+export interface HackerNewsClient {
+    fetchFeedIds(feed: Feed): Promise<number[]>;
+    fetchItem(id: number): Promise<HnApiItem | null>;
+    searchItemIds(query: string, type: SearchType, limit: number): Promise<SearchIdsResult>;
+    getMetrics(): ApiMetrics;
 }
 
 export interface NestedComment {
@@ -58,7 +82,7 @@ export interface NestedComment {
 
 export interface HnRecord {
     id: number;
-    type: string;
+    type: HnItemType;
     title: string | null;
     text: string | null;
     textHtml: string | null;
@@ -80,4 +104,43 @@ export interface HnRecord {
     deleted: boolean;
     comments: NestedComment[];
     collectedAt: string;
+}
+
+export interface ChargeResult {
+    chargedCount: number;
+    eventChargeLimitReached: boolean;
+}
+
+export interface RunDiagnostic {
+    stage: 'discovery' | 'item' | 'comment' | 'storage';
+    itemId?: number;
+    message: string;
+}
+
+export interface HackerNewsRunStatus {
+    status: 'succeeded' | 'partial' | 'empty' | 'stopped_spending_limit' | 'failed';
+    source: 'hacker_news_firebase_and_algolia';
+    mode: Mode;
+    candidateIdsDiscovered: number;
+    candidateIdsSelected: number;
+    itemRequests: number;
+    itemsFetched: number;
+    itemsMissing: number;
+    itemFailures: number;
+    recordsFiltered: number;
+    recordsMatched: number;
+    recordsSaved: number;
+    commentRequests: number;
+    commentsSaved: number;
+    commentsMissing: number;
+    commentFailures: number;
+    commentsSkippedByPolicy: number;
+    searchPagesFetched: number;
+    invalidSearchHitsSkipped: number;
+    searchPageLimitReached: boolean;
+    spendingLimitReached: boolean;
+    durationMs: number;
+    apiMetrics: ApiMetrics;
+    diagnostics: RunDiagnostic[];
+    failureMessage?: string;
 }
