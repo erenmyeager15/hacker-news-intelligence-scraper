@@ -104,10 +104,11 @@ Active pay-per-event pricing:
 
 | Event | Price |
 | --- | ---: |
-| `item-scraped` | `$0.00075` per item |
+| `item-scraped` | `$0.00075` per item (`$0.75` per 1,000) |
 | `apify-actor-start` | `$0.00005` per GB at run start |
 
 Records are saved and charged atomically. Empty, filtered, dead/deleted excluded, or failed records are not charged, and later API batches are skipped after the user's spending limit is reached.
+The Actor uses a 256 MB default and requires no browser, API key, or proxy, keeping platform usage small for normal feed and search runs.
 
 ## Common Workflows
 
