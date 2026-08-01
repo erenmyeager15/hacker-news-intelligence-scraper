@@ -132,6 +132,8 @@ The Actor uses a 256 MB default and requires no browser, API key, or proxy, keep
 
 Use this Actor for lawful collection of publicly available Hacker News data. Respect Hacker News, Algolia, and downstream platform terms, privacy laws, and any restrictions that apply to how you store or process exported data.
 
+This independent Actor is not affiliated with, endorsed by, or sponsored by Hacker News, Y Combinator, or Algolia.
+
 ## License
 
 Apache-2.0

@@ -6,6 +6,7 @@
   "version": "1.0",
   "buildTag": "latest",
   "categories": ["DEVELOPER_TOOLS", "NEWS", "AUTOMATION"],
+  "categoriesVersion": "1.0.0",
   "dockerfile": "Dockerfile",
   "input": "../INPUT_SCHEMA.json",
   "readme": "../README.md",
