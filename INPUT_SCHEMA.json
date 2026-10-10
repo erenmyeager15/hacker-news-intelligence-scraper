@@ -1,6 +1,6 @@
 {
-  "title": "Hacker News Scraper Input",
-  "description": "Collect feed items, search Hacker News, or fetch specific item IDs. No login, API key, or proxy is required.",
+  "title": "Hacker News Scraper & Monitor Input",
+  "description": "Collect Hacker News stories, launches, jobs, comments, or exact items and optionally compare their momentum across repeat runs. No login, API key, browser, or proxy is required.",
   "type": "object",
   "schemaVersion": 1,
   "additionalProperties": false,

@@ -1,13 +1,13 @@
 {
   "actorOutputSchemaVersion": 1,
-  "title": "Hacker News Intelligence Scraper Output",
-  "description": "Structured Hacker News records for feeds, search results, individual items, and optional nested comment threads from official public APIs.",
+  "title": "Hacker News Scraper & Monitor Output",
+  "description": "Structured Hacker News records, repeat-run momentum evidence, diagnostics, and ready-to-share Markdown and CSV change reports.",
   "type": "object",
   "properties": {
     "results": {
       "type": "string",
       "title": "Hacker News item records",
-      "description": "Clean dataset items containing Hacker News story, job, poll, and comment metadata with scores, authors, URLs, domains, feed or query context, and optional nested comments.",
+      "description": "Clean story, launch, job, poll, and comment rows with engagement metrics, source context, optional nested comments, and repeat-run change evidence.",
       "template": "{{links.apiDefaultDatasetUrl}}/items"
     },
     "runStatus": {

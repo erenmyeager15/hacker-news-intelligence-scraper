@@ -1,47 +1,76 @@
-# Hacker News Monitor - Trends, Launches & Mentions
+# Hacker News Scraper & Monitor — Startup, Trend & Launch Intelligence
 
-Collect Hacker News feeds, keyword search results, specific item IDs, and optional nested comment threads into clean Apify dataset rows. Repeat the same named watchlist to see score, discussion and feed-rank momentum, newly observed launches, content/link changes, and moderation changes. The Actor uses the official Hacker News Firebase API for item data and the public HN Algolia API for keyword search. No login, browser, API key, or proxy is required.
+Turn Hacker News into a repeatable startup and developer-intelligence workflow. Collect stories, Show HN launches, Ask HN discussions, jobs, comments, searches, or exact items—and rerun the same private watchlist to see what gained attention, what changed, and what moved in the feed.
 
-Use it for startup and competitor monitoring, Show HN launch tracking, developer trend research, Ask HN analysis, job signals, and recurring technical-news reports.
+Built for US-focused founders, product teams, investors, developer marketers, researchers, and newsletter operators who need evidence instead of a one-time snapshot.
 
-## Repeat-run watchlists
+## Why choose this Actor
+
+- **Monitor momentum, not just rows:** compare score, comment count, and feed rank across repeat runs.
+- **See evidence for every change:** previous values, deltas, changed fields, severity, observation count, and deterministic signals stay attached to each current row.
+- **Cover the full public workflow:** top, new, best, Ask HN, Show HN, jobs, keyword search, exact items, and optional nested comments.
+- **Get ready-to-use reports:** every run produces a summary plus human-readable Markdown and formula-safe CSV change reports.
+- **Keep histories separated:** use a stable `monitorName` for each brand, competitor, launch, topic, or feed.
+- **Run lean:** 256 MB default, no browser, login, API key, or proxy. Normal collection uses the official Hacker News Firebase API and public HN Algolia API.
+- **Pay for saved items:** `$0.75` per 1,000 records, plus the small Actor start event.
+
+## High-value US workflows
+
+1. **Show HN launch radar:** schedule the `show` feed and identify launches gaining score, discussion, or rank momentum.
+2. **Brand and competitor monitoring:** search product, company, founder, or domain terms and compare the same watchlist over time.
+3. **VC and product research:** watch developer pain points, emerging categories, buyer language, and recurring tools across top, new, and Ask HN.
+4. **Developer-demand signals:** monitor jobs, technical discussions, and named technologies for hiring or product-planning research.
+5. **Newsletter and content research:** export current rows and change reports into a review queue without rebuilding comparisons in a spreadsheet.
+
+The Actor reports deterministic public-data changes. It does not claim sentiment analysis, investment recommendations, or guaranteed coverage of every HN item.
+
+## Monitoring and reports
 
 Keep the same `monitorName` on a schedule. The first run creates a private baseline; later runs label every current row as `updated` or `unchanged` and retain a bounded observation history. Each row includes score/comment/rank deltas, points and comments per hour, comment-to-score ratio, severity, changed fields, and deterministic signals such as `new_item`, `score_spike`, `discussion_spike`, `rank_rising`, `rank_falling`, `link_changed`, and `moderation_changed`.
 
-Every run also writes `MONITOR_SUMMARY`, a Markdown `CHANGE_REPORT`, and a formula-safe `CHANGE_REPORT_CSV` to the default key-value store. Watchlist state lives in a separate named private store in the caller's Apify account. Current rows remain complete on every run; this is observation-based monitoring, not a guarantee that Algolia or Firebase exposes every HN item immediately.
+Every run also writes:
 
-Example: monitor recent AI launch stories and their momentum:
+| Report | What it provides |
+| --- | --- |
+| `MONITOR_SUMMARY` | Machine-readable counts and signal totals for automation. |
+| `CHANGE_REPORT` | Human-readable Markdown review of current changes. |
+| `CHANGE_REPORT_CSV` | Formula-safe spreadsheet export for scheduled reporting. |
+| `RUN_STATUS` | Outcome, counters, retries, diagnostics, and spending-limit state. |
+
+Watchlist state lives in a separate named private store in the caller's Apify account. Current rows remain complete on every run; this is observation-based monitoring, not a guarantee that Algolia or Firebase exposes every HN item immediately.
+
+Example: monitor US AI startup launches and their momentum:
 
 ```json
 {
   "mode": "search",
-  "query": "artificial intelligence",
+  "query": "AI startup",
   "searchType": "story",
   "fromDate": "2026-10-01",
   "maxResults": 25,
   "trackChanges": true,
-  "monitorName": "ai-launch-watch",
+  "monitorName": "us-ai-startup-launch-watch",
   "scoreChangeThreshold": 10,
   "commentChangeThreshold": 5
 }
 ```
 
-## Quick Start
+## Quick start: Show HN launch watchlist
 
 ```json
 {
   "mode": "feed",
-  "feed": "top",
+  "feed": "show",
   "query": "artificial intelligence",
   "searchType": "story",
-  "maxResults": 1,
+  "maxResults": 10,
   "includeComments": false,
   "trackChanges": true,
-  "monitorName": "hn-us-tech-watchlist"
+  "monitorName": "us-startup-launch-watch"
 }
 ```
 
-This collects one top-feed item without nested comments, keeping the first run fast and low-cost. Increase `maxResults` after checking the sample row.
+The first run creates a private baseline for ten current Show HN items. Schedule the same input and `monitorName` to compare later observations. Start small, review the dataset and reports, then increase `maxResults` if needed.
 
 ## Modes
 
@@ -112,7 +141,13 @@ Possible outcomes are:
 | `stopped_spending_limit` | Collection stopped at the caller's maximum cost per run. |
 | `failed` | Discovery, all usable item requests, input validation, or dataset storage failed. |
 
-## Verified Sample
+## Verified operation
+
+The public Actor recorded **27 successful runs with zero failed, aborted, or timed-out runs** in its rolling 30-day public statistics when this listing was reviewed on October 11, 2026.
+
+A one-item cloud proof completed in about **6 seconds**, peaked near **25 MB**, required no proxy traffic, and used approximately **$0.00013** in platform resources. These are owner verification results, not a performance guarantee; source response time, comments, result count, and Apify pricing can change actual runtime and cost.
+
+### Sample row
 
 A one-result top-feed proof on July 15, 2026 returned this row:
 
@@ -145,14 +180,15 @@ Active pay-per-event pricing:
 Records are saved and charged atomically. Empty, filtered, dead/deleted excluded, or failed records are not charged, and later API batches are skipped after the user's spending limit is reached.
 The Actor uses a 256 MB default and requires no browser, API key, or proxy, keeping platform usage small for normal feed and search runs.
 
-## Common Workflows
+## Scheduling a useful watchlist
 
-1. Schedule `top`, `new`, or `best` watchlists for developer and startup momentum.
-2. Track product or competitor mentions with `mode: "search"` and a stable `monitorName`.
-3. Watch Show HN launches for score, discussion and rank changes.
-4. Monitor Ask HN or jobs feeds for buyer, hiring and technical-demand signals.
-5. Analyze discussion quality by enabling comments on a small result set.
-6. Export current rows or the generated Markdown/CSV change report through Apify integrations.
+1. Choose one stable feed, query, or item set.
+2. Set a unique `monitorName` for that exact workflow.
+3. Run once to create the baseline.
+4. Schedule the same input hourly, daily, or weekly in Apify.
+5. Review `updated` rows and the Markdown or CSV report; use Apify webhooks or integrations if you need external notifications.
+
+Do not reuse one `monitorName` after materially changing the feed, query, filters, or result limit. Separate histories keep rank and change comparisons meaningful.
 
 ## Notes and Limits
 
