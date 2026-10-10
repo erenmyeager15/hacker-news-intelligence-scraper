@@ -22,6 +22,12 @@ const INPUT_FIELDS = new Set([
     'maxCommentsPerItem',
     'commentDepth',
     'includeDeadOrDeleted',
+    'trackChanges',
+    'monitorName',
+    'observationHistoryLimit',
+    'scoreChangeThreshold',
+    'commentChangeThreshold',
+    'newItemWindowHours',
 ]);
 
 export function normalizeInput(value: unknown): NormalizedInput {
@@ -56,6 +62,30 @@ export function normalizeInput(value: unknown): NormalizedInput {
         'includeDeadOrDeleted',
         false,
     );
+    const trackChanges = booleanValue(input.trackChanges, 'trackChanges', true);
+    const monitorName = stringValue(input.monitorName, 'monitorName', 'hn-us-tech-watchlist', 100, false);
+    const observationHistoryLimit = integerValue(
+        input.observationHistoryLimit,
+        'observationHistoryLimit',
+        2,
+        50,
+        10,
+    );
+    const scoreChangeThreshold = integerValue(
+        input.scoreChangeThreshold,
+        'scoreChangeThreshold',
+        1,
+        1_000_000_000,
+        10,
+    );
+    const commentChangeThreshold = integerValue(
+        input.commentChangeThreshold,
+        'commentChangeThreshold',
+        1,
+        1_000_000_000,
+        5,
+    );
+    const newItemWindowHours = integerValue(input.newItemWindowHours, 'newItemWindowHours', 1, 720, 24);
 
     if (mode === 'search' && !query) throw new Error('query must not be empty in search mode.');
     if (mode === 'items' && itemIds.length === 0) {
@@ -86,6 +116,12 @@ export function normalizeInput(value: unknown): NormalizedInput {
         maxCommentsPerItem,
         commentDepth,
         includeDeadOrDeleted,
+        trackChanges,
+        monitorName,
+        observationHistoryLimit,
+        scoreChangeThreshold,
+        commentChangeThreshold,
+        newItemWindowHours,
     };
 }
 

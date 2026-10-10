@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "tsc --noEmit",
-    "test": "npm run build && node --test dist/input.test.js dist/api.test.js dist/records.test.js dist/scraper.test.js",
+    "test": "npm run build && node --test dist/input.test.js dist/api.test.js dist/records.test.js dist/monitoring.test.js dist/reports.test.js dist/scraper.test.js",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
     "start": "node dist/main.js",
     "start:dev": "tsx src/main.ts"
@@ -22,7 +22,8 @@
     "typescript": "^5.8.3"
   },
   "overrides": {
-    "brace-expansion": "5.0.8"
+    "basic-ftp": "6.2.3",
+    "brace-expansion": "5.0.12"
   },
   "engines": {
     "node": ">=20.0.0"

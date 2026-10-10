@@ -16,5 +16,11 @@
   "includeComments": false,
   "maxCommentsPerItem": 20,
   "commentDepth": 3,
-  "includeDeadOrDeleted": false
+  "includeDeadOrDeleted": false,
+  "trackChanges": true,
+  "monitorName": "hn-us-tech-watchlist",
+  "observationHistoryLimit": 10,
+  "scoreChangeThreshold": 10,
+  "commentChangeThreshold": 5,
+  "newItemWindowHours": 24
 }

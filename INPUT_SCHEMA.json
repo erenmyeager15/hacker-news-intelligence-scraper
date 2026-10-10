@@ -157,6 +157,58 @@
       "description": "Include records marked dead or deleted by Hacker News.",
       "editor": "checkbox",
       "default": false
+    },
+    "trackChanges": {
+      "title": "Track changes between runs",
+      "type": "boolean",
+      "description": "Store bounded private observations and compare score, comments, feed rank, title, link, and moderation state on repeat runs.",
+      "editor": "checkbox",
+      "default": true
+    },
+    "monitorName": {
+      "title": "Watchlist name",
+      "type": "string",
+      "description": "Stable name for this recurring watchlist. Use a different name to keep histories separate.",
+      "editor": "textfield",
+      "default": "hn-us-tech-watchlist",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "observationHistoryLimit": {
+      "title": "Stored observations per item",
+      "type": "integer",
+      "description": "Maximum private observations retained for each Hacker News item.",
+      "editor": "number",
+      "default": 10,
+      "minimum": 2,
+      "maximum": 50
+    },
+    "scoreChangeThreshold": {
+      "title": "Score spike threshold",
+      "type": "integer",
+      "description": "Emit a score_spike signal when points increase by at least this amount between observations.",
+      "editor": "number",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "commentChangeThreshold": {
+      "title": "Discussion spike threshold",
+      "type": "integer",
+      "description": "Emit a discussion_spike signal when comments increase by at least this amount between observations.",
+      "editor": "number",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 1000000000
+    },
+    "newItemWindowHours": {
+      "title": "New-item window in hours",
+      "type": "integer",
+      "description": "Baseline items no older than this window receive a new_item signal.",
+      "editor": "number",
+      "default": 24,
+      "minimum": 1,
+      "maximum": 720
     }
   },
   "required": ["mode", "feed", "query", "searchType", "maxResults"]

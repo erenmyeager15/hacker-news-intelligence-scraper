@@ -24,6 +24,12 @@ export interface NormalizedInput {
     maxCommentsPerItem: number;
     commentDepth: number;
     includeDeadOrDeleted: boolean;
+    trackChanges: boolean;
+    monitorName: string;
+    observationHistoryLimit: number;
+    scoreChangeThreshold: number;
+    commentChangeThreshold: number;
+    newItemWindowHours: number;
 }
 
 export interface HnApiItem {
@@ -104,6 +110,56 @@ export interface HnRecord {
     deleted: boolean;
     comments: NestedComment[];
     collectedAt: string;
+}
+
+export type MonitoringStatus = 'disabled' | 'baseline' | 'updated' | 'unchanged';
+export type ChangeSeverity = 'info' | 'low' | 'medium' | 'high';
+
+export interface HnObservation {
+    observedAt: string;
+    score: number;
+    commentCount: number;
+    rank: number | null;
+    title: string | null;
+    url: string | null;
+    domain: string | null;
+    author: string | null;
+    dead: boolean;
+    deleted: boolean;
+}
+
+export interface HnMonitoredRecord extends HnRecord {
+    ageHours: number | null;
+    pointsPerHour: number | null;
+    commentsPerHour: number | null;
+    commentToScoreRatio: number | null;
+    monitorName: string | null;
+    monitoringStatus: MonitoringStatus;
+    changeSeverity: ChangeSeverity;
+    changeSummary: string;
+    changedFields: string[];
+    changeSignals: string[];
+    previousSeenAt: string | null;
+    observationCount: number;
+    previousScore: number | null;
+    previousCommentCount: number | null;
+    previousRank: number | null;
+    scoreDelta: number | null;
+    commentDelta: number | null;
+    rankDelta: number | null;
+}
+
+export interface MonitorSummary {
+    monitorName: string | null;
+    trackChanges: boolean;
+    total: number;
+    baseline: number;
+    updated: number;
+    unchanged: number;
+    highSeverity: number;
+    mediumSeverity: number;
+    signals: Record<string, number>;
+    generatedAt: string;
 }
 
 export interface ChargeResult {

@@ -15,6 +15,24 @@
       "title": "Run status and diagnostics",
       "description": "Machine-readable outcome, counters, retry metrics, partial-failure diagnostics, and spending-limit state.",
       "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/RUN_STATUS"
+    },
+    "monitorSummary": {
+      "type": "string",
+      "title": "Watchlist summary",
+      "description": "Counts of baseline, updated and unchanged items plus deterministic score, discussion, rank and moderation signals.",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/MONITOR_SUMMARY"
+    },
+    "changeReport": {
+      "type": "string",
+      "title": "Markdown change report",
+      "description": "Human-readable recurring watchlist report.",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/CHANGE_REPORT"
+    },
+    "changeReportCsv": {
+      "type": "string",
+      "title": "CSV change report",
+      "description": "Formula-safe CSV report for spreadsheets and scheduled exports.",
+      "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/CHANGE_REPORT_CSV"
     }
   }
 }
